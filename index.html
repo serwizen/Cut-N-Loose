@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cut N Loose Salon | Longview's Premier Hair & Beauty Studio</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- CSS (Tailwind CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mauve: '#7D4E6B',
+                        rose: '#E8A4B8',
+                        cream: '#FAF6F1',
+                        charcoal: '#2C2C2C',
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"DM Sans"', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .hero-pattern {
+            background-color: #7D4E6B;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px);
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .service-card {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(125, 78, 107, 0.1);
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            border-bottom-color: #E8A4B8;
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Lightbox styles */
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 44, 44, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-scrolled {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px -5px rgba(125, 78, 107, 0.15);
+            color: #2C2C2C !important;
+            border-bottom: 1px solid rgba(125, 78, 107, 0.1);
+        }
+        
+        .nav-scrolled .nav-link { color: #2C2C2C; }
+        .nav-scrolled .logo-text { color: #7D4E6B; }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #7D4E6B;
+            box-shadow: 0 0 0 4px rgba(125, 78, 107, 0.05);
+        }
+
+        .artistic-italic {
+            font-style: italic;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body class="font-sans text-charcoal bg-cream overflow-x-hidden">
+
+    <!-- SECTION: Navigation -->
+    <nav id="main-nav" class="fixed top-0 w-full z-50 transition-all duration-500 py-6 px-6 md:px-12 flex justify-between items-center text-white border-b border-transparent">
+        <div class="flex items-center space-x-2">
+            <span class="logo-text font-serif text-3xl font-bold tracking-tight">Cut N Loose</span>
+            <span class="hidden sm:inline-block text-[10px] bg-rose/20 text-rose px-2 py-0.5 rounded-full uppercase tracking-widest font-bold">Salon</span>
+        </div>
+        
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-10 text-xs font-bold uppercase tracking-[0.2em]">
+            <a href="#services" class="nav-link hover:text-rose transition-colors">Services</a>
+            <a href="#gallery" class="nav-link hover:text-rose transition-colors">Gallery</a>
+            <a href="#stylists" class="nav-link hover:text-rose transition-colors">Stylists</a>
+            <a href="#booking" class="nav-link hover:text-rose transition-colors">Book Now</a>
+            <a href="#location" class="nav-link hover:text-rose transition-colors">Contact</a>
+        </div>
+
+        <div class="hidden md:block">
+            <a href="#booking" class="bg-mauve text-white px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#6A425B] transition-all shadow-xl shadow-mauve/20">
+                Book Appointment
+            </a>
+        </div>
+
+        <!-- Mobile Hamburger -->
+        <button id="mobile-menu-btn" class="md:hidden text-2xl focus:outline-none">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-[60] flex flex-col items-center justify-center space-y-8 text-2xl font-serif text-charcoal translate-x-full transition-transform duration-300 md:hidden">
+        <button id="close-mobile-menu" class="absolute top-6 right-6 text-3xl"><i class="fa-solid fa-xmark"></i></button>
+        <a href="#services" class="mobile-link">Services</a>
+        <a href="#gallery" class="mobile-link">Gallery</a>
+        <a href="#stylists" class="mobile-link">Stylists</a>
+        <a href="#booking" class="mobile-link">Book Now</a>
+        <a href="#location" class="mobile-link">Contact</a>
+        <a href="#booking" class="bg-mauve text-white px-8 py-3 rounded-full text-lg font-sans">Book Appointment</a>
+    </div>
+
+    <!-- SECTION: Hero -->
+    <section class="hero-pattern min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20 relative text-white overflow-hidden">
+        <div class="absolute top-20 left-10 text-white/5 font-serif italic text-[15vw] select-none leading-none pointer-events-none">Transformation</div>
+        
+        <div class="max-w-5xl fade-in z-10">
+            <h2 class="text-rose uppercase tracking-[0.4em] font-bold text-xs md:text-sm mb-6">Pine Street, Longview TX</h2>
+            <h1 class="font-serif text-6xl md:text-8xl lg:text-9xl mb-8 leading-[1.1]">
+                Longview's Premier<br><span class="artistic-italic font-normal">Hair & Beauty</span> Studio
+            </h1>
+            
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 justify-center mt-12">
+                <a href="#booking" class="bg-white text-mauve px-10 py-5 rounded-full font-bold text-lg hover:bg-rose hover:text-white transition-all flex items-center justify-center shadow-2xl shadow-black/20">
+                    Book Your Appointment <span class="ml-3 text-xl">✂</span>
+                </a>
+                <a href="tel:9035550000" class="border border-white/40 px-10 py-5 rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center">
+                    Call Us Today
+                </a>
+            </div>
+
+            <div class="mt-20 flex flex-wrap justify-center gap-x-12 gap-y-6 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-white/70">
+                <div class="flex items-center space-x-3">
+                    <span class="w-1.5 h-1.5 bg-rose rounded-full"></span>
+                    <span>Walk-Ins Welcome</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="w-1.5 h-1.5 bg-rose rounded-full"></span>
+                    <span>All Hair Types</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="w-1.5 h-1.5 bg-rose rounded-full"></span>
+                    <span>Expert Colorists</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="w-1.5 h-1.5 bg-rose rounded-full"></span>
+                    <span>Locally Owned</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animated Counter Strip -->
+        <div class="absolute bottom-0 w-full bg-black/20 backdrop-blur-md py-8 md:py-10 border-t border-white/5">
+            <div class="container mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-serif mb-1 counter" data-target="500">0</div>
+                    <div class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-rose opacity-80">Happy Clients</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-serif mb-1 counter" data-target="10">0</div>
+                    <div class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-rose opacity-80">Years Serving</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-serif mb-1">4.9★</div>
+                    <div class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-rose opacity-80">Google Rating</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-serif mb-1 counter" data-target="8">0</div>
+                    <div class="text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-rose opacity-80">Expert Stylists</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Services -->
+    <section id="services" class="py-32 px-6 bg-[#FAF6F1]">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-end justify-between mb-20">
+            <div class="md:w-2/3">
+                <h2 class="font-serif text-5xl md:text-6xl text-mauve mb-6 fade-in">Signature Services</h2>
+                <p class="text-gray-500 text-xl font-serif italic fade-in">Premium care for every look, tailored to your unique style.</p>
+            </div>
+            <div class="mt-8 md:mt-0 fade-in">
+                <span class="text-[10px] uppercase font-bold tracking-[0.4em] text-rose bg-rose/10 px-4 py-2 rounded-full">Explore Menu</span>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+            <!-- Service Items (Modified to match theme list-like aesthetic) -->
+            <div class="service-card group cursor-default p-4 fade-in">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold group-hover:text-rose transition-colors">Women's Haircut</h3>
+                        <p class="text-gray-400 text-sm mt-1">Precision cut tailored to your face shape</p>
+                    </div>
+                    <span class="text-mauve font-serif text-xl">$35+</span>
+                </div>
+            </div>
+
+            <div class="service-card group cursor-default p-4 fade-in">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold group-hover:text-rose transition-colors">Men's Haircut</h3>
+                        <p class="text-gray-400 text-sm mt-1">Clean, sharp cuts for every style</p>
+                    </div>
+                    <span class="text-mauve font-serif text-xl">$20+</span>
+                </div>
+            </div>
+
+            <div class="service-card group cursor-default p-4 fade-in">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold group-hover:text-rose transition-colors">Full Color</h3>
+                        <p class="text-gray-400 text-sm mt-1">All-over color application, vivid or natural</p>
+                    </div>
+                    <span class="text-mauve font-serif text-xl">$65+</span>
+                </div>
+            </div>
+
+            <div class="service-card group cursor-default p-4 fade-in">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold group-hover:text-rose transition-colors">Highlights</h3>
+                        <p class="text-gray-400 text-sm mt-1">Partial or full highlights, foil technique</p>
+                    </div>
+                    <span class="text-mauve font-serif text-xl">$75+</span>
+                </div>
+            </div>
+            
+            <div class="service-card group cursor-default p-4 fade-in">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold group-hover:text-rose transition-colors">Balayage</h3>
+                        <p class="text-gray-400 text-sm mt-1">Hand-painted sun-kissed color</p>
+                    </div>
+                    <span class="text-mauve font-serif text-xl">$120+</span>
+                </div>
+            </div>
+
+            <div class="service-card group cursor-default p-4 fade-in">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <h3 class="font-serif text-2xl font-bold group-hover:text-rose transition-colors">Keratin Treatment</h3>
+                        <p class="text-gray-400 text-sm mt-1">Smooth frizz, add shine for weeks</p>
+                    </div>
+                    <span class="text-mauve font-serif text-xl">$150+</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-20">
+            <a href="#booking" class="bg-mauve text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest text-sm hover:translate-y-[-2px] transition-all shadow-xl shadow-mauve/20">
+                Book A Session
+            </a>
+        </div>
+    </section>
+
+    <!-- SECTION: Gallery -->
+    <section id="gallery" class="py-32 bg-white">
+        <div class="max-w-6xl mx-auto text-center mb-16 px-6">
+            <h2 class="font-serif text-5xl md:text-6xl text-mauve mb-6 fade-in">Artistic <span class="artistic-italic">Gallery</span></h2>
+            <p class="text-gray-400 text-lg font-serif italic fade-in">Every head of hair is a canvas for transformation</p>
+            
+            <div class="mt-12 flex flex-wrap justify-center gap-4 text-[10px] font-bold uppercase tracking-[0.3em] fade-in">
+                <button class="filter-btn active px-8 py-3 rounded-full border border-mauve bg-mauve text-white transition-all" data-filter="all">All</button>
+                <button class="filter-btn px-8 py-3 rounded-full border border-mauve/20 text-mauve hover:border-mauve transition-all" data-filter="cuts">Cuts</button>
+                <button class="filter-btn px-8 py-3 rounded-full border border-mauve/20 text-mauve hover:border-mauve transition-all" data-filter="color">Color</button>
+                <button class="filter-btn px-8 py-3 rounded-full border border-mauve/20 text-mauve hover:border-mauve transition-all" data-filter="balayage">Balayage</button>
+                <button class="filter-btn px-8 py-3 rounded-full border border-mauve/20 text-mauve hover:border-mauve transition-all" data-filter="special">Special Occasion</button>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 overflow-hidden">
+            <div id="gallery-grid" class="columns-1 md:columns-2 lg:columns-3 gap-8">
+                <!-- Gallery Tiles (Updated with theme colors) -->
+                <div class="gallery-item cursor-pointer fade-in" data-category="cuts">
+                    <div class="h-[280px] rounded-[2rem] border border-mauve/5 hover:border-mauve transition-all flex flex-col items-center justify-center text-white p-8" style="background: linear-gradient(135deg, #7D4E6B, #6A425B)">
+                        <div class="text-[10px] uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Salon Cut</div>
+                        <span class="font-serif text-2xl italic">Modern Bob</span>
+                    </div>
+                </div>
+                <div class="gallery-item cursor-pointer fade-in" data-category="color">
+                    <div class="h-[320px] rounded-[2rem] border border-mauve/5 hover:border-mauve transition-all flex flex-col items-center justify-center text-rose p-8" style="background: #FAF6F1">
+                        <div class="text-[10px] uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Signature Color</div>
+                        <span class="font-serif text-2xl">Ruby Red Finish</span>
+                    </div>
+                </div>
+                <div class="gallery-item cursor-pointer fade-in" data-category="balayage">
+                    <div class="h-[350px] rounded-[2rem] border border-mauve/5 hover:border-mauve transition-all flex flex-col items-center justify-center text-white p-8" style="background: #E8A4B8">
+                        <div class="text-[10px] uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Hand Painted</div>
+                        <span class="font-serif text-2xl italic">Sun-Kissed</span>
+                    </div>
+                </div>
+                <div class="gallery-item cursor-pointer fade-in" data-category="special">
+                    <div class="h-[300px] rounded-[2rem] border border-mauve/5 hover:border-mauve transition-all flex flex-col items-center justify-center text-mauve p-8" style="background: linear-gradient(135deg, #FFFFFF, #FAF6F1)">
+                        <div class="text-[10px] uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Event Styling</div>
+                        <span class="font-serif text-2xl">Wedding Updo</span>
+                    </div>
+                </div>
+                <div class="gallery-item cursor-pointer fade-in" data-category="cuts">
+                    <div class="h-[260px] rounded-[2rem] border border-mauve/5 hover:border-mauve transition-all flex flex-col items-center justify-center text-white p-8" style="background: #2C2C2C">
+                        <div class="text-[10px] uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Precision</div>
+                        <span class="font-serif text-2xl italic">Classic Pixie</span>
+                    </div>
+                </div>
+                <div class="gallery-item cursor-pointer fade-in" data-category="color">
+                    <div class="h-[380px] rounded-[2rem] border border-mauve/5 hover:border-mauve transition-all flex flex-col items-center justify-center text-white p-8" style="background: #7D4E6B">
+                        <div class="text-[10px] uppercase font-bold tracking-[0.2em] mb-4 opacity-70">Vivid</div>
+                        <span class="font-serif text-2xl">Purple Rain</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Stylists -->
+    <section id="stylists" class="py-32 bg-[#FAF6F1] px-6">
+        <div class="max-w-6xl mx-auto text-center mb-20">
+            <h2 class="font-serif text-5xl md:text-6xl text-mauve mb-6 fade-in">Artistic <span class="artistic-italic">Team</span></h2>
+            <p class="text-gray-500 text-xl font-serif italic fade-in">Creative visionaries dedicated to your transformation</p>
+        </div>
+
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
+            <!-- Stylist Cards -->
+            <div class="group fade-in">
+                <div class="bg-white p-12 rounded-[3rem] shadow-2xl shadow-mauve/5 border border-mauve/5 flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-10 transition-all duration-500 hover:translate-y-[-10px]">
+                    <div class="w-32 h-32 rounded-full bg-mauve text-white flex items-center justify-center text-4xl font-serif italic shrink-0 border-4 border-rose/10 group-hover:scale-105 transition-transform">MG</div>
+                    <div class="text-center md:text-left">
+                        <h3 class="font-serif text-4xl mb-2">Maria G.</h3>
+                        <p class="text-rose font-bold mb-4 uppercase tracking-[0.3em] text-[10px]">Senior Colorist</p>
+                        <p class="text-gray-500 mb-8 italic leading-relaxed text-sm">"I love creating natural-looking color that enhances your inner glow. Experts in balayage."</p>
+                        <a href="#booking" class="text-xs font-bold uppercase tracking-widest text-mauve border-b-2 border-mauve/20 hover:border-mauve transition-all pb-1 italic">Book Session →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group fade-in">
+                <div class="bg-white p-12 rounded-[3rem] shadow-2xl shadow-mauve/5 border border-mauve/5 flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-10 transition-all duration-500 hover:translate-y-[-10px]">
+                    <div class="w-32 h-32 rounded-full bg-mauve text-white flex items-center justify-center text-4xl font-serif italic shrink-0 border-4 border-rose/10 group-hover:scale-105 transition-transform">JT</div>
+                    <div class="text-center md:text-left">
+                        <h3 class="font-serif text-4xl mb-2">Jessica T.</h3>
+                        <p class="text-rose font-bold mb-4 uppercase tracking-[0.3em] text-[10px]">Style Specialist</p>
+                        <p class="text-gray-500 mb-8 italic leading-relaxed text-sm">"Precision is my true passion. From edgy pixies to long layers, let's find your unique cut."</p>
+                        <a href="#booking" class="text-xs font-bold uppercase tracking-widest text-mauve border-b-2 border-mauve/20 hover:border-mauve transition-all pb-1 italic">Book Session →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Booking Form -->
+    <section id="booking" class="py-24 bg-mauve text-white px-6">
+        <div class="max-w-4xl mx-auto text-center mb-12">
+            <h2 class="font-serif text-4xl md:text-5xl mb-4 fade-in">Book Your Appointment</h2>
+            <p class="text-rose text-lg font-medium fade-in">We'd love to see you. Fill out the form and we'll confirm your spot.</p>
+        </div>
+
+        <div class="max-w-2xl mx-auto bg-white rounded-3xl p-8 md:p-12 text-charcoal shadow-2xl fade-in">
+            <form id="booking-form" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="font-bold text-sm text-gray-700">Full Name *</label>
+                        <input type="text" id="name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all" placeholder="John Doe">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-bold text-sm text-gray-700">Phone Number *</label>
+                        <input type="tel" id="phone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all" placeholder="(903) 000-0000">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="font-bold text-sm text-gray-700">Email Address</label>
+                    <input type="email" id="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all" placeholder="hello@example.com">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="font-bold text-sm text-gray-700">Service Requested</label>
+                        <select id="service" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all">
+                            <option>Not sure — will discuss</option>
+                            <option>Women's Cut</option>
+                            <option>Men's Cut</option>
+                            <option>Full Color</option>
+                            <option>Highlights</option>
+                            <option>Balayage</option>
+                            <option>Keratin</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-bold text-sm text-gray-700">Preferred Stylist</label>
+                        <select id="stylist" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all">
+                            <option>No preference</option>
+                            <option>Maria G.</option>
+                            <option>Jessica T.</option>
+                            <option>Ashley R.</option>
+                            <option>Brenda C.</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="font-bold text-sm text-gray-700">Preferred Date</label>
+                        <input type="date" id="date" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-bold text-sm text-gray-700">Preferred Time</label>
+                        <select id="time" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all">
+                            <option>Morning (9 AM - 12 PM)</option>
+                            <option>Afternoon (12 PM - 3 PM)</option>
+                            <option>Late Afternoon (3 PM - 6 PM)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="font-bold text-sm text-gray-700">Notes / Special Requests</label>
+                    <textarea id="notes" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-mauve/20 transition-all h-32" placeholder="Any allergies, hair concerns, or inspiration photos to mention?"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-mauve text-white font-bold py-5 rounded-xl hover:bg-opacity-90 transition-all shadow-xl text-lg flex items-center justify-center">
+                    Request My Appointment <i class="fa-solid fa-calendar-check ml-3"></i>
+                </button>
+            </form>
+
+            <div id="success-msg" class="hidden flex flex-col items-center justify-center text-center space-y-6">
+                <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h3 class="font-serif text-3xl font-bold">Thank You, <span id="user-name"></span>!</h3>
+                <p class="text-gray-600">We've received your request and will call you within 24 hours to confirm.</p>
+                <button id="reset-form" class="bg-mauve text-white px-8 py-3 rounded-full font-bold">Book Another Appointment</button>
+            </div>
+        </div>
+
+        <div class="mt-16 flex flex-col md:flex-row items-center justify-center space-y-6 md:space-y-0 md:space-x-12 opacity-80 text-xl font-medium">
+            <a href="tel:9035550000" class="flex items-center hover:text-rose transition-colors">
+                <i class="fa-solid fa-phone-volume mr-3"></i> (903) 555-0000
+            </a>
+            <a href="#" class="flex items-center hover:text-rose transition-colors">
+                <i class="fa-brands fa-facebook mr-3"></i> Find us on Facebook
+            </a>
+        </div>
+    </section>
+
+    <!-- SECTION: Reviews -->
+    <section class="py-24 bg-white px-6 overflow-hidden">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between mb-16 space-y-8 md:space-y-0">
+            <div class="text-center md:text-left">
+                <h2 class="font-serif text-4xl md:text-5xl text-mauve mb-4 fade-in">What Longview Is Saying</h2>
+                <div class="flex items-center justify-center md:justify-start space-x-4 fade-in">
+                    <span class="text-5xl font-serif font-bold text-mauve">4.9</span>
+                    <div class="space-y-1">
+                        <div class="text-yellow-400 flex">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-xs font-bold text-gray-500 tracking-widest uppercase">Based on 150+ Reviews</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3 fade-in">
+                <button id="prev-review" class="w-12 h-12 rounded-full border border-mauve text-mauve hover:bg-mauve hover:text-white transition-all"><i class="fa-solid fa-chevron-left"></i></button>
+                <button id="next-review" class="w-12 h-12 rounded-full border border-mauve text-mauve hover:bg-mauve hover:text-white transition-all"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Carousel -->
+        <div class="max-w-6xl mx-auto relative h-[350px]">
+            <div id="review-container" class="flex transition-transform duration-500 ease-in-out h-full gap-6">
+                <!-- Slides will be here -->
+                <div class="review-slide w-full md:w-1/3 shrink-0 p-8 rounded-2xl bg-cream border border-mauve/5 flex flex-col justify-between">
+                    <div>
+                        <div class="text-yellow-400 mb-4"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="text-gray-700 italic text-lg leading-relaxed">"Maria did an incredible balayage on my hair and I've never gotten so many compliments. Worth every penny!"</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="font-serif font-bold text-mauve text-lg">— Sarah M.</span>
+                        <div class="text-[10px] bg-white px-2 py-1 rounded-full font-bold shadow-sm flex items-center">
+                            <span class="text-blue-500 mr-0.5">G</span><span class="text-red-500 mr-0.5">o</span><span class="text-yellow-500 mr-0.5">o</span><span class="text-blue-500 mr-0.5">g</span><span class="text-green-500 mr-0.5">l</span><span class="text-red-500">e</span> Review
+                        </div>
+                    </div>
+                </div>
+                <!-- ... additional reviews will be handled by simple carousel logic ... -->
+                <div class="review-slide w-full md:w-1/3 shrink-0 p-8 rounded-2xl bg-cream border border-mauve/5 flex flex-col justify-between">
+                   <div>
+                        <div class="text-yellow-400 mb-4"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="text-gray-700 italic text-lg leading-relaxed">"Best salon in Longview, no question. Fast, professional, and my haircut came out exactly how I wanted."</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="font-serif font-bold text-mauve text-lg">— Kayla D.</span>
+                        <div class="text-[10px] bg-white px-2 py-1 rounded-full font-bold shadow-sm flex items-center">Google Review</div>
+                    </div>
+                </div>
+                <div class="review-slide w-full md:w-1/3 shrink-0 p-8 rounded-2xl bg-cream border border-mauve/5 flex flex-col justify-between">
+                    <div>
+                        <div class="text-yellow-400 mb-4"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="text-gray-700 italic text-lg leading-relaxed">"I've been going to Cut N Loose for 3 years. They always make me feel so welcome and the results are gorgeous."</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="font-serif font-bold text-mauve text-lg">— Tiffany R.</span>
+                        <div class="text-[10px] bg-white px-2 py-1 rounded-full font-bold shadow-sm flex items-center">Google Review</div>
+                    </div>
+                </div>
+                <div class="review-slide w-full md:w-1/3 shrink-0 p-8 rounded-2xl bg-cream border border-mauve/5 flex flex-col justify-between">
+                    <div>
+                        <div class="text-yellow-400 mb-4"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="text-gray-700 italic text-lg leading-relaxed">"Got a perm here and Ashley absolutely nailed it. Very knowledgeable and patient. Highly recommend!"</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="font-serif font-bold text-mauve text-lg">— Renee B.</span>
+                        <div class="text-[10px] bg-white px-2 py-1 rounded-full font-bold shadow-sm flex items-center">Google Review</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-16">
+            <a href="#" class="inline-block border-2 border-rose text-mauve px-8 py-3 rounded-full font-bold hover:bg-rose hover:text-white transition-all fade-in">
+                See All Reviews on Google
+            </a>
+        </div>
+    </section>
+
+    <!-- SECTION: Location & Hours -->
+    <section id="location" class="py-24 bg-cream px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white rounded-[3rem] overflow-hidden shadow-2xl p-4 md:p-10">
+            <!-- Map -->
+            <div class="h-[400px] lg:h-full min-h-[400px] rounded-[2rem] overflow-hidden bg-gray-100 border border-cream fade-in">
+                <iframe src="https://maps.google.com/maps?q=Pine+Street+Longview+TX&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+            
+            <!-- Details -->
+            <div class="flex flex-col justify-center p-6 md:p-10 fade-in">
+                <h2 class="font-serif text-4xl md:text-5xl text-mauve mb-8">Find Us</h2>
+                
+                <div class="space-y-8 mb-10">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-cream w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-mauve"><i class="fa-solid fa-location-dot"></i></div>
+                        <div>
+                            <p class="font-bold text-lg mb-1">Pine Street, Longview, TX 75601</p>
+                            <a href="https://maps.google.com/maps?q=Pine+Street+Longview+TX" target="_blank" class="text-mauve text-sm underline font-bold">Get Directions</a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-cream w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-mauve"><i class="fa-solid fa-phone"></i></div>
+                        <div>
+                            <p class="font-bold text-lg mb-1">(903) 555-0000</p>
+                            <p class="text-sm text-gray-500">Call or text for questions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-cream pt-8">
+                    <h4 class="uppercase tracking-widest text-xs font-bold text-gray-500 mb-4">Opening Hours</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between font-medium"><span>Monday – Friday</span> <span>9:00 AM – 7:00 PM</span></div>
+                        <div class="flex justify-between font-medium"><span>Saturday</span> <span>8:00 AM – 5:00 PM</span></div>
+                        <div class="flex justify-between font-medium opacity-50 italic"><span>Sunday</span> <span>By Appointment Only</span></div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-cream rounded-2xl flex items-start space-x-3 text-sm">
+                    <i class="fa-solid fa-car text-mauve mt-1"></i>
+                    <p class="text-gray-700">Free parking available on Pine Street and adjacent lots. Walk-ins welcome!</p>
+                </div>
+
+                <a href="https://maps.google.com/maps?q=Pine+Street+Longview+TX" target="_blank" class="mt-8 bg-mauve text-white px-8 py-4 rounded-full text-center font-bold shadow-lg hover:bg-opacity-90 transition-all uppercase tracking-widest">
+                    Open in Google Maps
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Footer -->
+    <footer class="bg-charcoal text-white/70 py-24 px-6 overflow-hidden">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+            <!-- Left -->
+            <div class="md:col-span-2 space-y-8">
+                <div class="font-serif text-4xl font-bold text-rose">Cut N Loose</div>
+                <p class="text-white/40 leading-relaxed text-lg max-w-md italic">"Where every visit is an artistic transformation of your inner beauty."</p>
+                <div class="flex items-center space-x-4 text-xs font-bold uppercase tracking-widest text-rose">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    Currently Open Until 7 PM
+                </div>
+            </div>
+
+            <!-- Links -->
+            <div class="space-y-6">
+                <h4 class="text-white font-serif text-xl font-bold tracking-tight">Studio</h4>
+                <ul class="space-y-4 text-sm font-medium uppercase tracking-widest">
+                    <li><a href="#services" class="hover:text-rose transition-all">Services</a></li>
+                    <li><a href="#gallery" class="hover:text-rose transition-all">Gallery</a></li>
+                    <li><a href="#stylists" class="hover:text-rose transition-all">Stylists</a></li>
+                    <li><a href="#location" class="hover:text-rose transition-all">Location</a></li>
+                </ul>
+            </div>
+
+            <!-- Social -->
+            <div class="space-y-6">
+                <h4 class="text-white font-serif text-xl font-bold tracking-tight">Connect</h4>
+                <div class="flex flex-col space-y-4 text-sm font-medium uppercase tracking-widest">
+                    <a href="#" class="hover:text-rose flex items-center"><i class="fa-brands fa-instagram mr-3"></i> Instagram</a>
+                    <a href="#" class="hover:text-rose flex items-center"><i class="fa-brands fa-facebook mr-3"></i> Facebook</a>
+                    <a href="#" class="hover:text-rose flex items-center"><i class="fa-brands fa-tiktok mr-3"></i> TikTok</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto border-t border-white/5 mt-20 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] tracking-[0.3em] font-bold uppercase text-white/30">
+            <div>© 2025 Cut N Loose Salon &middot; Pine Street, Longview TX</div>
+            <div class="mt-4 md:mt-0 italic capitalize tracking-normal text-white/50">Designed with Artistic Flair in Texas</div>
+        </div>
+    </footer>
+
+    <!-- Mobile Sticky Bar -->
+    <div class="md:hidden fixed bottom-1 w-full px-4 z-[100] h-16 flex space-x-2">
+        <a href="tel:9035550000" class="flex-1 bg-mauve text-white rounded-2xl flex items-center justify-center font-bold shadow-xl border border-white/20">
+            <i class="fa-solid fa-phone mr-2"></i> CALL NOW
+        </a>
+        <a href="#booking" class="flex-1 bg-rose text-white rounded-2xl flex items-center justify-center font-bold shadow-xl border border-white/20">
+            <i class="fa-solid fa-scissors mr-2"></i> BOOK NOW
+        </a>
+    </div>
+
+    <!-- Lightbox Overlay -->
+    <div id="lightbox">
+        <button id="close-lightbox" class="absolute top-10 right-10 text-white text-5xl">&times;</button>
+        <div id="lightbox-content" class="max-w-[90%] max-h-[80%] rounded-3xl overflow-hidden p-2 flex items-center justify-center">
+            <!-- Content will be injected -->
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- Navbar Scroll Effect ---
+        const nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) {
+                nav.classList.add('nav-scrolled');
+                nav.classList.remove('text-white');
+            } else {
+                nav.classList.remove('nav-scrolled');
+                nav.classList.add('text-white');
+            }
+        });
+
+        // --- Mobile Menu ---
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMenu = document.getElementById('close-mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        menuBtn.addEventListener('click', () => mobileMenu.classList.remove('translate-x-full'));
+        closeMenu.addEventListener('click', () => mobileMenu.classList.add('translate-x-full'));
+        mobileLinks.forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('translate-x-full')));
+
+        // --- Animated Counters ---
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = +counter.getAttribute('data-target');
+                    const duration = 1500;
+                    const increment = target / (duration / 16);
+                    let current = 0;
+                    
+                    const update = () => {
+                        current += increment;
+                        if (current < target) {
+                            counter.innerText = Math.ceil(current) + (target > 400 ? '+' : '');
+                            requestAnimationFrame(update);
+                        } else {
+                            counter.innerText = target + (target > 400 ? '+' : '');
+                        }
+                    };
+                    update();
+                    counterObserver.unobserve(counter);
+                }
+            });
+        }, { threshold: 0.5 });
+        counters.forEach(c => counterObserver.observe(c));
+
+        // --- Fade-in on Scroll ---
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    fadeObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+        // --- Gallery Filter ---
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-mauve', 'text-white');
+                    b.classList.add('text-mauve');
+                });
+                btn.classList.add('active', 'bg-mauve', 'text-white');
+                btn.classList.remove('text-mauve');
+
+                const filter = btn.getAttribute('data-filter');
+                galleryItems.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                        item.classList.remove('hidden');
+                        setTimeout(() => item.style.opacity = '1', 50);
+                    } else {
+                        item.style.opacity = '0';
+                        setTimeout(() => item.classList.add('hidden'), 300);
+                    }
+                });
+            });
+        });
+
+        // --- Lightbox ---
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightbox-content');
+        const closeLightbox = document.getElementById('close-lightbox');
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const inner = item.querySelector('div').cloneNode(true);
+                inner.classList.remove('h-[280px]', 'h-[320px]', 'h-[350px]', 'h-[300px]', 'h-[260px]', 'h-[380px]');
+                inner.classList.add('w-full', 'h-[60vh]', 'p-12');
+                lightboxContent.innerHTML = '';
+                lightboxContent.appendChild(inner);
+                lightbox.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        closeLightbox.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        // --- Review Carousel ---
+        const container = document.getElementById('review-container');
+        const prev = document.getElementById('prev-review');
+        const next = document.getElementById('next-review');
+        let index = 0;
+        const totalSlides = document.querySelectorAll('.review-slide').length;
+        const perPage = window.innerWidth > 768 ? 3 : 1;
+
+        const updateCarousel = () => {
+            const width = document.querySelector('.review-slide').offsetWidth + 24;
+            container.style.transform = `translateX(-${index * width}px)`;
+        };
+
+        next.addEventListener('click', () => {
+            if (index < totalSlides - perPage) index++;
+            else index = 0;
+            updateCarousel();
+        });
+
+        prev.addEventListener('click', () => {
+            if (index > 0) index--;
+            else index = totalSlides - perPage;
+            updateCarousel();
+        });
+
+        setInterval(() => {
+            if (index < totalSlides - perPage) index++;
+            else index = 0;
+            updateCarousel();
+        }, 4000);
+
+        window.addEventListener('resize', updateCarousel);
+
+        // --- Booking Form Validation ---
+        const form = document.getElementById('booking-form');
+        const successMsg = document.getElementById('success-msg');
+        const userNameSpan = document.getElementById('user-name');
+        const resetBtn = document.getElementById('reset-form');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+
+            if (name && phone) {
+                userNameSpan.innerText = name;
+                form.classList.add('hidden');
+                successMsg.classList.remove('hidden');
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            form.reset();
+            form.classList.remove('hidden');
+            successMsg.classList.add('hidden');
+        });
+
+    </script>
+</body>
+</html>
